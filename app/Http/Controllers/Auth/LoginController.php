@@ -7,6 +7,7 @@ use App\Models\AuthLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -18,29 +19,15 @@ class LoginController extends Controller
 
     public function store(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => 'required|email',
+        $request->validate([
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Laravel's Auth uses getAuthPassword() which maps to password_hash
-        $attempted = Auth::attempt([
-            'email'         => $credentials['email'],
-            'password_hash' => $credentials['password'],
-        ], $request->boolean('remember'));
+        // Manually find user and verify against password_hash column
+        $user = User::where('email', $request->email)->first();
 
-        // Fallback: manual attempt since column name is non-standard
-        if (!$attempted) {
-            $user = User::where('email', $credentials['email'])->first();
-
-            if ($user && \Hash::check($credentials['password'], $user->password_hash)) {
-                Auth::login($user, $request->boolean('remember'));
-                $attempted = true;
-            }
-        }
-
-        if (!$attempted) {
-            $user = User::where('email', $credentials['email'])->first();
+        if (!$user || !Hash::check($request->password, $user->password_hash)) {
             AuthLog::record($user?->id, 'failed_login', false, 'Invalid credentials');
 
             throw ValidationException::withMessages([
@@ -48,8 +35,8 @@ class LoginController extends Controller
             ]);
         }
 
-        AuthLog::record(Auth::id(), 'login', true);
-
+        Auth::login($user, $request->boolean('remember'));
+        AuthLog::record($user->id, 'login', true);
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));
