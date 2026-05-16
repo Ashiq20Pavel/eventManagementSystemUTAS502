@@ -13,7 +13,9 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::withTrashed()
-            ->when($request->search, fn($q, $s) =>
+            ->when(
+                $request->search,
+                fn($q, $s) =>
                 $q->where('name', 'like', "%$s%")->orWhere('email', 'like', "%$s%")
             )
             ->when($request->role, fn($q, $r) => $q->where('role', $r))
@@ -31,16 +33,32 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:100',
-            'email'    => 'required|email|max:191|unique:users',
-            'role'     => 'required|in:admin,organiser,attendee',
-            'password' => 'required|string|min:8|confirmed',
+            'name' => 'required|string|max:100',
+            'email' => [
+                'required',
+                'string',
+                'max:191',
+                'unique:users',
+                'regex:/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/',
+            ],
+            'role' => 'required|in:admin,organiser,attendee',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).+$/',
+            ],
+        ], [
+            'email.regex' => 'Please enter a valid email address (e.g. user@example.com).',
+            'password.regex' => 'Password must contain at least 1 uppercase letter, 1 number, and 1 special character.',
+            'password.min' => 'Password must be at least 8 characters.',
         ]);
 
         $user = User::create([
-            'name'          => $data['name'],
-            'email'         => $data['email'],
-            'role'          => $data['role'],
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'role' => $data['role'],
             'password_hash' => Hash::make($data['password']),
         ]);
 
@@ -57,9 +75,17 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
-            'name'  => 'required|string|max:100',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'role'  => 'required|in:admin,organiser,attendee',
+            'name' => 'required|string|max:100',
+            'email' => [
+                'required',
+                'string',
+                'max:191',
+                Rule::unique('users')->ignore($user->id),
+                'regex:/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/',
+            ],
+            'role' => 'required|in:admin,organiser,attendee',
+        ], [
+            'email.regex' => 'Please enter a valid email address (e.g. user@example.com).',
         ]);
 
         $old = $user->toArray();

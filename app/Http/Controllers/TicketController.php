@@ -24,11 +24,11 @@ class TicketController extends Controller
         }
 
         $ticket = Ticket::create([
-            'event_id'     => $event->id,
-            'user_id'      => $user->id,
-            'ticket_code'  => strtoupper(Str::random(8) . '-' . Str::random(4)),
-            'status'       => 'active',
-            'amount_paid'  => $event->price,
+            'event_id' => $event->id,
+            'user_id' => $user->id,
+            'ticket_code' => strtoupper(Str::random(8) . '-' . Str::random(4)),
+            'status' => 'active',
+            'amount_paid' => $event->price,
             'purchased_at' => now(),
         ]);
 
@@ -75,5 +75,25 @@ class TicketController extends Controller
             ->paginate(10);
 
         return view('tickets.index', compact('tickets'));
+    }
+
+    public function downloadPdf(Ticket $ticket)
+    {
+        $user = auth()->user();
+
+        abort_unless(
+            $user->isAdmin() || $ticket->user_id === $user->id,
+            403
+        );
+
+        $ticket->load(['event.organiser', 'user']);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('tickets.pdf', compact('ticket'));
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $filename = 'ticket-' . $ticket->ticket_code . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

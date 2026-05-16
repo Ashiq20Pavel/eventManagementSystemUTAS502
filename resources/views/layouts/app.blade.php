@@ -19,11 +19,11 @@
         }
 
         .nav-link {
-            @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-all;
+            @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-all;
         }
 
         .nav-link.active {
-            @apply bg-slate-800 text-white;
+            @apply bg-indigo-600 text-white;
         }
     </style>
 </head>
@@ -32,7 +32,7 @@
     <div class="flex h-full min-h-screen">
 
         {{-- Sidebar --}}
-        <aside class="w-60 bg-slate-950 fixed inset-y-0 left-0 flex flex-col z-40">
+        <aside class="w-60 bg-slate-900 fixed inset-y-0 left-0 flex flex-col z-40">
             <div class="flex items-center gap-2.5 px-5 py-5 border-b border-slate-800">
                 <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0">
                     <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -43,7 +43,7 @@
                 </div>
                 <div>
                     <p class="text-white font-semibold text-sm">EventPortal</p>
-                    <p class="text-slate-500 text-xs capitalize">{{ auth()->user()->role }}</p>
+                    <p class="text-slate-300 text-xs capitalize">{{ auth()->user()->role }}</p>
                 </div>
             </div>
 
@@ -80,8 +80,8 @@
                 @endif
 
                 @if(auth()->user()->isAdmin())
-                    <div class="pt-3 mt-3 border-t border-slate-800">
-                        <p class="px-3 text-xs font-medium text-slate-600 uppercase tracking-wider mb-2">Admin</p>
+                    <div class="px-3 py-4 border-t border-slate-700 space-y-0.5">
+                        <p class="px-3 text-xs font-medium text-slate-400 uppercase tracking-wider mb-2">Admin</p>
                         <a href="{{ route('users.index') }}"
                             class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -110,10 +110,10 @@
                 @endif
             </nav>
 
-            <div class="px-3 py-4 border-t border-slate-800 space-y-0.5">
+            <div class="px-3 py-4 border-t border-slate-700 space-y-0.5">
                 <div class="px-3 py-2 mb-1">
                     <p class="text-white text-sm font-medium truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-slate-500 text-xs truncate">{{ auth()->user()->email }}</p>
+                    <p class="text-slate-300 text-xs truncate">{{ auth()->user()->email }}</p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

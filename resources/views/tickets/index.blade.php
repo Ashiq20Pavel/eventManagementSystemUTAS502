@@ -27,10 +27,26 @@
                             {{ (float) $ticket->amount_paid === 0.0 ? 'Free' : '$' . number_format($ticket->amount_paid, 2) }}</span>
                     </div>
                 </div>
-                <a href="{{ route('tickets.show', $ticket) }}"
-                    class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-sm font-medium px-4 py-2 rounded-xl flex-shrink-0 transition-colors">
-                    View
-                </a>
+                <!-- <a href="{{ route('tickets.show', $ticket) }}"
+                            class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-sm font-medium px-4 py-2 rounded-xl flex-shrink-0 transition-colors">
+                            View
+                        </a> -->
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <a href="{{ route('tickets.show', $ticket) }}"
+                        class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-sm font-medium px-4 py-2 rounded-xl transition-colors">
+                        View
+                    </a>
+                    @if($ticket->status === 'active')
+                        <a href="{{ route('tickets.pdf', $ticket) }}"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            PDF
+                        </a>
+                    @endif
+                </div>
             </div>
         @empty
             <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">

@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('my-tickets', [TicketController::class, 'myTickets'])->name('tickets.index');
     Route::get('tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
     Route::patch('tickets/{ticket}/cancel', [TicketController::class, 'cancel'])->name('tickets.cancel');
+    Route::get('tickets/{ticket}/pdf', [TicketController::class, 'downloadPdf'])->name('tickets.pdf');
 
     // Admin only
     Route::middleware('role:admin')->group(function () {

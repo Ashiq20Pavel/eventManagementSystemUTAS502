@@ -113,8 +113,8 @@
                             <tr class="ho
                                        ver:bg-slate-50">
                                 <td class="px-5 py-3.5 mono text-xs text-indigo-600">{{ $t->ticket_code }}</td>
-                                <td class="px-5 py-3.5 text-slate-600">{{ $t->user->name }}</td>
-                                <td class="px-5 py-3.5 text-slate-600">{{ Str::limit($t->event->title, 30) }}</td>
+                                <td class="px-5 py-3.5 text-slate-600">{{ $t->user?->name ?? 'Deleted User' }}</td>
+                                <td class="px-5 py-3.5 text-slate-600">{{ Str::limit($t->event?->title ?? 'Deleted Event', 30) }}</td>
                                 <td class="px-5 py-3.5 font-medium text-slate-700">${{ number_format($t->amount_paid, 2) }}</td>
                                 <td class="px-5 py-3.5 text-slate-400 text-xs">{{ $t->purchased_at->diffForHumans() }}</td>
                                 <td class="px-5 py-3.5">
