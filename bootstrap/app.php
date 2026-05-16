@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        // Prevent browser caching on all responses
+        $middleware->web(append: [
+            \App\Http\Middleware\PreventBackHistory::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

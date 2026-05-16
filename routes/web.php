@@ -11,6 +11,8 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
+// Public homepage
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store']);
@@ -25,7 +27,7 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 // Authenticated routes
 Route::middleware('auth')->group(function () {
 
-    Route::get('/', fn() => redirect()->route('dashboard'));
+    // Route::get('/', fn() => redirect()->route('dashboard'));
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Events

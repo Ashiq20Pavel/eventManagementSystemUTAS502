@@ -12,6 +12,10 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
         $user = $request->user();
 
         if ($user->isAdmin()) {
@@ -28,12 +32,12 @@ class DashboardController extends Controller
     private function adminDashboard()
     {
         $stats = [
-            'total_events'   => Event::count(),
-            'published'      => Event::where('status', 'published')->count(),
-            'total_tickets'  => Ticket::where('status', 'active')->count(),
-            'total_revenue'  => Ticket::where('status', 'active')->sum('amount_paid'),
-            'total_users'    => User::count(),
-            'organisers'     => User::where('role', 'organiser')->count(),
+            'total_events' => Event::count(),
+            'published' => Event::where('status', 'published')->count(),
+            'total_tickets' => Ticket::where('status', 'active')->count(),
+            'total_revenue' => Ticket::where('status', 'active')->sum('amount_paid'),
+            'total_users' => User::count(),
+            'organisers' => User::where('role', 'organiser')->count(),
         ];
 
         $recentEvents = Event::with('organiser')->latest()->take(6)->get();
@@ -45,8 +49,9 @@ class DashboardController extends Controller
 
     private function organiserDashboard(User $user)
     {
-        $events = $user->organisedEvents()->withCount(['tickets as sold_count' => fn($q) =>
-            $q->where('status', 'active')
+        $events = $user->organisedEvents()->withCount([
+            'tickets as sold_count' => fn($q) =>
+                $q->where('status', 'active')
         ])->latest()->get();
 
         $totalRevenue = $user->organisedEvents()
@@ -68,7 +73,10 @@ class DashboardController extends Controller
             ->get();
 
         return view('dashboard.organiser', compact(
-            'events', 'totalRevenue', 'recentTickets', 'upcomingEvents'
+            'events',
+            'totalRevenue',
+            'recentTickets',
+            'upcomingEvents'
         ));
     }
 
